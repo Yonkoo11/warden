@@ -1,0 +1,7 @@
+.venv
+.tools
+data
+ai
+design/measure
+probe/*.jsonl
+.git

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Receipt {{ rid }} · Warden{% endblock %}
+{% block main %}
+{% if not receipt %}
+<section class="block"><p class="error">Receipt not found.</p><p><a href="/">Back to Warden</a></p></section>
+{% else %}
+<section class="block receipt-page">
+  {% with slip=receipt, hero=true, evidence=false %}{% include "_slip.html" %}{% endwith %}
+  {% if receipt.decision == 'needs re-pair' or receipt.reason_code == 'SESSION_EXPIRED' %}<p class="error">Waited: the wallet session expired. Re-pair it in the Binance Wallet App.</p>{% endif %}
+  <p class="hint num">sha256 {{ receipt.sha256 }}</p>
+  <p><a href="/api/receipts/{{ rid }}" download="warden-{{ rid }}.json">Download JSON</a></p>
+  <details><summary>Raw receipt</summary><pre class="num">{{ pretty }}</pre></details>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{# The receipt slip: the signature device. `slip` is a receipt dict; `evidence` marks the first-run evidence. #}
+{% set labels = {'session':'Wallet session','lock':'Trading lock','status':'Issuer status','balance':'Balance','quote':'Quote','quota':'Daily limit','swap':'Order placed'} %}<article class="slip{% if hero %} slip--hero{% endif %}" aria-label="Receipt">
+  {% set who = (slip.acting_for or '') %}<p class="slip__who num">Placed by {{ (slip.agent or {}).name or 'Warden' }}{% if (slip.agent or {}).agent_id %} (agent #{{ slip.agent.agent_id }}){% endif %}{% if who %} for {{ who[:6] }}…{{ who[-4:] }}{% endif %}</p>
+  <p class="slip__label">{% if evidence %}{{ slip.label }}{% else %}Latest run{% endif %}</p>
+  <p class="slip__decision is-{{ slip.decision|replace(' ','-') }}">{{ slip.decision|capitalize }}{% if slip.reason_code %}: {{ slip.reason_code|reason }}{% endif %}</p>
+  {% if slip.decision in ('waited','refused','needs re-pair') %}<p class="slip__rule">Nothing was sold.</p>{% endif %}
+  <p class="slip__rule">{{ slip.rule_text|replace('before the print.','before the earnings report.') }}</p>
+  <ul class="slip__rows">
+    {% for c in slip.checks %}
+    <li class="slip__row"><span>{{ labels.get(c.name, c.name|capitalize) }}</span><span class="num {{ 'is-ok' if c.ok else 'is-refuse' }}">{% set v = c.value %}{% if c.name == 'session' %}{{ (v.status if v is mapping else v)|lower }}{% elif c.name == 'lock' %}{{ 'off' if ((v.status if v is mapping else v)|lower) == 'unlocked' else (v.status if v is mapping else v)|lower }}{% elif v is mapping %}{% if c.name == 'status' %}{{ v.reasonCode }}{% if v.reasonMsg %} {{ v.reasonMsg }}{% endif %}{% if v.marketStatus %}, {{ v.marketStatus }}{% endif %}{% elif c.name == 'balance' %}{% if v.sell %}sell {{ v.sell }} of {{ v.held }}{% else %}{{ v.held }}{% endif %}{% elif c.name == 'quote' %}{% if v.to_usdt %}{{ v.to_usdt[:8] }} USDT{% endif %}{% if v.deviation_pct is not none and v.deviation_pct is defined %}, {{ v.deviation_pct }}% from market{% endif %}{% if v.error %}{{ v.error }}{% endif %}{% elif c.name == 'quota' %}{% if v.notional_usd %}{{ '%.2f'|format(v.notional_usd) }} USD of {{ v.quotaLeft|int if v.quotaLeft else '?' }} left today{% endif %}{% elif c.name == 'swap' %}order {{ v.orderId }}{% elif v.error %}{{ v.error }}{% else %}{{ v.values()|select|join(', ') }}{% endif %}{% else %}{{ v }}{% endif %}</span></li>
+    {% endfor %}
+    {% if slip.order %}
+    <li class="slip__row"><span>Order</span><span class="num">{{ slip.order.order_id }} {{ slip.order.terminal_status or 'pending' }}</span></li>
+    {% endif %}
+  </ul>
+  {% if slip.order and slip.order.tx_hash %}
+  <p class="slip__tx num"><a href="https://bscscan.com/tx/{{ slip.order.tx_hash }}" rel="noopener">View on BscScan</a> {{ slip.order.tx_hash[:10] }}…{{ slip.order.tx_hash[-6:] }}</p>
+  {% endif %}
+  <p class="slip__meta num">{{ slip.created_utc|when }} UTC, through {{ 'the Agentic Wallet' if slip.executor == 'agentic-wallet' else slip.executor }}.</p>
+  {% if slip.id and not evidence and hero %}<p class="slip__open"><a href="/r/{{ slip.id }}">Open the full receipt</a></p>{% endif %}
+</article>

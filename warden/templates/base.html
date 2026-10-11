@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Warden{% endblock %}</title>
+<meta name="description" content="Tell Warden what to do with your stock tokens before the company reports earnings.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="/">Warden</a><nav><a href="/judge">For judges</a></nav></header>
+<main class="page">{% block main %}{% endblock %}</main>
+<footer class="foot"><a href="/judge">For judges</a> · <a href="/#receipts">Receipts</a> · <span>Not investment advice. Warden executes rules you write; it never suggests one.</span></footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

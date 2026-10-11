@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}For judges · Warden{% endblock %}
+{% block main %}
+<section class="block">
+  <h1>How to check this yourself</h1>
+  <p>Warden executes a holder's own rule around an earnings print through Binance Agentic Wallet, after checking the issuer's live status, the wallet session and lock, the balance, the quote and the daily quota. Every run leaves a receipt with a hash; executed ones carry a BscScan transaction.</p>
+  <h2>Service</h2>
+  <p class="hint">Started {{ state.started_utc }}. Scheduler ticks: {{ state.tick_count }}. Last tick: {{ state.last_tick_utc or 'none yet' }}{% if state.last_error %}. Last error: {{ state.last_error }}{% endif %}</p>
+  <h2>Prints in the next 14 days that exist as BNB Chain tokens</h2>
+  <p class="hint">Read {{ fetched_utc }} from the Nasdaq calendar, joined to Binance's token list. "time unconfirmed" rows cannot be armed until the hour is confirmed.</p>
+  <table><thead><tr><th>Date</th><th>Company</th><th>Session</th><th>Tokens on BSC</th></tr></thead><tbody>
+  {% for p in prints %}<tr><td>{{ p.date }}</td><td>{{ p.company }} ({{ p.ticker }})</td><td>{{ p.time }}{% if not p.confirmed %}, time unconfirmed{% endif %}</td><td>{{ p.tokens|join(', ') }}</td></tr>{% endfor %}
+  </tbody></table>
+  <h2>Armed rules</h2>
+  {% for r in rules %}<p>Sell {{ r.sell_pct }}% of {{ r.token_symbol }} {{ r.offset_minutes }} minutes before the earnings report. {{ r.state|capitalize }}, {{ (r.scheduled_utc or '')[:16]|replace('T',' ') }} UTC</p>{% else %}<p class="hint">None.</p>{% endfor %}
+  <h2>Three commands and what they print</h2>
+<pre>python3 -m warden.cli status --token APLDon
+# one JSON line: reasonCode, marketStatus, nextOpenTime, per_share, stock_price, exchange_session, gap_pct, session_ok
+
+python3 -m warden.cli prints --days 14
+# one JSON line per print that exists as a BSC token, soonest first
+
+curl -s {{ request.url.scheme }}://{{ request.url.netloc }}/health
+# ok, scheduler, last_tick_utc, wallet_session, armed_rules, next_fire_utc</pre>
+  <h2>Recent receipts</h2>
+  {% for rec in receipts %}{% include "_row.html" %}{% else %}<p class="hint">None yet.</p>{% endfor %}
+</section>
+{% endblock %}

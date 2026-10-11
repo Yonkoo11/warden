@@ -1,0 +1,42 @@
+{
+  "label": "Live test sale, 5 Oct 2026, before any rule ran.",
+  "acting_for": "0x554c6293877c5149f8b26D37c744AC6AF72fBAA5",
+  "agent": {"name": "Warden"},
+  "rule_text": "Sell 0.096416 APLDon to USDT through the paired Agentic Wallet.",
+  "created_utc": "2026-10-05T03:36:54+00:00",
+  "decision": "executed",
+  "reason_code": null,
+  "executor": "agentic-wallet",
+  "checks": [
+    {
+      "name": "session",
+      "value": "CONNECTED",
+      "ok": true
+    },
+    {
+      "name": "lock",
+      "value": "unlocked",
+      "ok": true
+    },
+    {
+      "name": "quote",
+      "value": {
+        "to_usdt": "2.481257"
+      },
+      "ok": true
+    }
+  ],
+  "order": {
+    "order_id": "26100500001941295467",
+    "terminal_status": "FINISHED",
+    "tx_hash": "0x6ac479545c300e5fbb58d46408b0f99af46b9b71804b9f5eb33e90f170007eb4"
+  },
+  "earlier": [
+    {
+      "what": "Buy 5 USDT of APLDon",
+      "order_id": "26100500001941295034",
+      "status": "FINISHED",
+      "tx_hash": "0xb16358f5bc6d2ea9e19289d018e04847b5498ad29d0803b95c588496f2b330b6"
+    }
+  ]
+}

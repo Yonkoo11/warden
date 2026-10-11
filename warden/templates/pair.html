@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Pair wallet · Warden{% endblock %}
+{% block main %}
+<section class="block">
+  <h1>Pair the Binance Wallet App</h1>
+  <p>Have the Binance Wallet App open on your phone first. A code lives five minutes from the moment you press the button.</p>
+  {% set live = pairing and not pairing.error and pairing.verify == "waiting" %}
+  {% if pairing and pairing.verify == "paired" %}
+    <p><strong>Paired.</strong> Warden can trade for this wallet until the session ends.</p>
+  {% elif live %}
+    <p>Pairing code: <strong class="num">{{ pairing.pairingCode }}</strong> (must match the code the app shows)</p>
+    <p class="countdown num" id="left" data-exp="{{ pairing.expires_ms }}" aria-live="off"></p>
+    <p><a class="btn" href="{{ pairing.urlForWeb }}" rel="noopener" target="_blank">Open the sign-in QR</a></p>
+    <p class="hint">Scan it in the Wallet App and approve. Expires at {{ (pairing.expires_utc or "")[11:19] }} UTC.</p>
+  {% elif pairing and pairing.verify == "expired" %}
+    <p class="error">That code expired or was declined. Press the button for a new one.</p>
+  {% elif pairing %}
+    <p class="error">Sign-in did not start. Try again in a minute.</p>
+  {% endif %}
+  {% if not live %}<form method="post" action="/admin/pair"><button type="submit" class="btn">{% if pairing %}Get a new code{% else %}Start sign-in{% endif %}</button></form>{% endif %}
+</section>
+{% if live %}
+<script>
+(function(){var el=document.getElementById("left");var exp=+el.dataset.exp;
+function t(){var s=Math.round((exp-Date.now())/1000);
+ el.textContent=s>0?Math.floor(s/60)+":"+String(s%60).padStart(2,"0")+" left":"expired";
+ if(s<=0||s%5===0){location.href="/admin/pair";}}
+t();setInterval(t,1000);})();
+</script>
+{% endif %}
+{% endblock %}

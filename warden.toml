@@ -1,0 +1,40 @@
+[schedule]
+tick_seconds = 15
+session_check_minutes = [1440, 60]
+default_offset_minutes = 60
+min_offset_minutes = 15
+max_offset_minutes = 240
+
+[limits]
+price_impact_cap_pct = 0.5
+price_deviation_cap_pct = 1.5
+min_sell_usd = 1.0
+min_buy_usd = 5.0
+max_notional_usd = 50
+slippage_pct = 1.0
+sell_share_steps_pct = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+[http]
+connect_timeout_s = 10
+read_timeout_s = 20
+retry_after_default_s = 15
+max_retries = 5
+
+[orders]
+poll_every_s = 3
+poll_for_s = 120
+late_poll_every_s = 60
+late_poll_for_s = 1800
+
+[binance]
+chain_id = "56"
+public_base = "https://www.binance.com/bapi/defi"
+signed_base = "https://web3.binance.com"
+usdt = "0x55d398326f99059fF775485246999027B3197955"
+
+[earnings]
+calendar = "https://api.nasdaq.com/api/calendar/earnings"
+lookahead_days = 14
+after_hours_utc = "20:05"
+pre_market_utc = "10:00"
+fire_window_minutes = 5

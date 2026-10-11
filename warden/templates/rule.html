@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="hero">
+  <div class="hero__text">
+    <h1>Tell Warden what to do with your stock tokens before the company reports earnings.</h1>
+    <p class="lede">You write one rule. Before the print, Warden checks your wallet, the issuer's trading status and the price, then places the order from the agent wallet you paired in the Binance app. Every receipt says Warden placed it.</p>
+    <form method="get" action="/" class="check">
+      <label for="address">Your BSC wallet address</label>
+      <input id="address" name="address" value="{{ address }}" placeholder="0x…" autocomplete="off" spellcheck="false">
+      <button type="submit" class="btn">Show my earnings dates</button>
+    </form>
+    {% if not address %}<p class="hint">Paste a BSC wallet address to see which of its stock tokens report in the next 14 days.</p>
+    {% elif address_valid is sameas false %}<p class="error">That is not a BSC address (42 characters starting with 0x).</p>{% endif %}
+  </div>
+  <div class="hero__slip">
+    {% if slip %}{% with hero=true, evidence=slip_is_evidence %}{% include "_slip.html" %}{% endwith %}{% endif %}
+    {% set nxt = rules|selectattr('state','equalto','armed')|first %}{% if nxt %}<p class="next num">Next run: {{ nxt.token_symbol }}, sell {{ nxt.sell_pct }}%, {{ nxt.scheduled_utc|when }} UTC, {{ nxt.offset_minutes }} minutes before the earnings report.</p>{% endif %}
+    <p class="live num">Read {{ read_utc }} UTC. Warden's clock checks every 15 seconds.</p>
+  </div>
+</section>
+
+{% if address and address_valid %}
+<section id="holdings" class="block" data-address="{{ address }}">
+  <p class="hint" id="holdings-loading" hidden>Loading prints…</p>
+  <div id="holdings-list"></div>
+  <p class="hint num" id="limits-line"></p>
+</section>
+{% endif %}
+
+<section class="block limits">
+  <h2>What Warden will not do</h2>
+  <ul>
+    <li>It never pretends to be you. It trades through the agent wallet you paired in the Binance app, and every receipt says Warden placed the order.</li>
+    <li>It never suggests a rule or a stock. You write the rule.</li>
+    <li>It cannot raise your wallet limits. Those are set in the Binance app.</li>
+    <li>It does not trade when the issuer restricts the token for earnings. It records the refusal instead.</li>
+    <li>It does not promise a price. If the quote is more than 1.5% from the market price, it stops.</li>
+  </ul>
+</section>
+
+{% if admin_enabled %}
+<section class="block card" id="arm">
+  <h2>Arm a rule</h2>
+  {% if arm_error %}<p class="error">{{ arm_error }}</p>{% endif %}
+  <form method="post" action="/admin/arm" class="rule-form">
+    <input type="hidden" name="address" value="{{ address }}">
+    <p>Sell <select name="sell_pct">{% for s in cfg.limits.sell_share_steps_pct %}<option value="{{ s }}" {% if s == 100 %}selected{% endif %}>{{ s }}%</option>{% endfor %}</select>
+    of <input name="token" placeholder="APLDon" required size="9"> <input name="offset" type="number" min="{{ cfg.schedule.min_offset_minutes }}" max="{{ cfg.schedule.max_offset_minutes }}" value="{{ cfg.schedule.default_offset_minutes }}" size="4"> minutes before the earnings report.</p>
+    <details><summary>Print time not confirmed? Set it from the company's investor page.</summary>
+      <p><input name="print_date" placeholder="YYYY-MM-DD"> <input name="print_time_utc" placeholder="HH:MM UTC"> <input name="time_source" placeholder="source URL" size="30"></p></details>
+    <p><button type="submit" class="btn">Arm rule</button></p>
+  </form>
+</section>
+{% endif %}
+
+<section class="block" id="rules">
+  <h2>Armed rules</h2>
+  {% if not rules %}<p class="hint">No rule armed yet.</p>{% endif %}
+  {% for r in rules %}
+  <article class="card rule">
+    <p class="rule__text">Sell {{ r.sell_pct }}% of {{ r.token_symbol }} {{ r.offset_minutes }} minutes before the earnings report.</p>
+    <p class="hint num">Print {{ r.print_date }} {{ r.print_time_utc or '' }} UTC, {% if r.confirmed %}time confirmed{% else %}time unconfirmed{% endif %}. {% if r.state == 'armed' %}Armed. Fires {{ r.scheduled_utc[:16]|replace('T',' ') }} UTC.{% elif r.state == 'disarmed' %}Disarmed: print time unconfirmed.{% else %}{{ r.state|capitalize }}{% endif %}</p>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="block" id="receipts">
+  <h2>Receipts</h2>
+  {% if not receipts %}{% if rules and rules[0].scheduled_utc %}<p class="hint">No run yet. This rule fires {{ rules[0].scheduled_utc[:16]|replace('T',' ') }} UTC.</p>{% else %}<p class="hint">No run yet.</p>{% endif %}{% endif %}
+  {% for rec in receipts %}{% include "_row.html" %}{% endfor %}
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/app.js"></script>{% endblock %}
