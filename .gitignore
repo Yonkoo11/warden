@@ -54,3 +54,6 @@ probe/*.log
 .venv/
 __pycache__/
 .publish-review
+
+# local notes
+ai/
