@@ -11,7 +11,7 @@
 
 **A holder of a tokenized US stock on BNB Chain writes one rule around an earnings report ("sell 50% of APLDon 60 minutes before the print"). Before the print, Warden checks the issuer's live trading status, the wallet session and lock, the balance, the quote and the daily quota, then places a market order from the agent wallet paired in the Binance app. The live test on 5 Oct 2026 bought 5 USDT of APLDon and sold half back: 3 of 3 orders FINISHED on BSC mainnet, round trip 0.76% plus 0.00003 BNB of gas.**
 
-**[ Live ↗ ](https://warden-production-e5c3.up.railway.app)** · **[ For judges ↗ ](https://warden-production-e5c3.up.railway.app/judge)** · **[ Verify it yourself ↗ ](#verify-it-yourself-in-60-seconds)** · **[ The receipt ↗ ](https://bscscan.com/tx/0x6ac479545c300e5fbb58d46408b0f99af46b9b71804b9f5eb33e90f170007eb4)** · **[ Demo clip, 36 s ↗ ](https://github.com/Yonkoo11/warden/raw/main/docs/demo/warden-demo.mp4)**
+**[ Live ↗ ](https://warden-production-e5c3.up.railway.app)** · **[ For judges ↗ ](https://warden-production-e5c3.up.railway.app/judge)** · **[ Verify it yourself ↗ ](#verify-it-yourself-in-60-seconds)** · **[ The receipt ↗ ](https://bscscan.com/tx/0x6ac479545c300e5fbb58d46408b0f99af46b9b71804b9f5eb33e90f170007eb4)** · **[ Demo video, 2 min 27 s ↗ ](https://github.com/Yonkoo11/warden/raw/main/docs/demo/warden-demo.mp4)**
 
 Built for BNB Hack: Tokenized Stocks Edition (main track, Binance Web3 Wallet).
 
@@ -158,5 +158,5 @@ For real execution install the Agentic Wallet CLI, run `baw auth signin` on the 
 They cover the gate decisions (refuse, wait, execute), the scheduler's session checks and fire window, RWA response parsing from recorded fixtures, and the web routes. The CI workflow is `.github/workflows/tests.yml`.
 
 ## Site and docs
-Demo clip (36 s, no narration): `docs/demo/warden-demo.mp4`. It shows the home page with a wallet address entered, the judge page listing the next 14 days of prints that exist as BNB Chain tokens, and the BscScan receipt for the live sell. Submission text: `SUBMISSION.md`.
+Demo video (2 min 27 s, narrated, 1080p): `docs/demo/warden-demo.mp4`. It walks the live product: the home page and the 5 Oct test-sale slip, holdings for a pasted BSC address joined to the Nasdaq calendar, the expired-session line, the sale on a public BSC explorer, the judge page, a local run where the gate refuses on a closed market, and the home page again. The narration is a synthetic guide voice until the owner records the script. Submission text: `SUBMISSION.md`.
 Live instance: https://warden-production-e5c3.up.railway.app · MIT License. The hosted instance stores only the owner's wallet session, the armed rules and the receipts; nothing about visitors.
